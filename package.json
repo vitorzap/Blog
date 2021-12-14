@@ -1,0 +1,24 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "Exemplo de Blog",
+  "main": "index.js",
+  "repository": "https://github.com/vitorzap/Blog",
+  "author": "Vitor Zamprogno Amancio Pereira <“vitor.zapereira@gmail.com”>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "express": "^4.17.1",
+    "sequelize": "^6.12.0-beta.3"
+  },
+  "scripts": {
+    "start": "sucrase-node src/app.js",
+    "dev": "nodemon src/app.js"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15",
+    "sequelize-cli": "^6.3.0",
+    "sucrase": "^3.20.3",
+    "sucrose": "^0.8.2"
+  }
+}
