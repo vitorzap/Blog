@@ -1,10 +1,11 @@
 const Sequelize = require('sequelize');
 
 const Autor = require('../app/models/Autor');
+const Categoria = require('../app/models/Categoria');
 
 const { config: dbConfig } = require('../config/database');
 
-const models = [Autor];
+const models = [Autor, Categoria];
 
 class MainDatabase {
   constructor() {

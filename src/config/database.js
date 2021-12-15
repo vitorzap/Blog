@@ -1,5 +1,5 @@
 module.exports = {
-  // config: {
+  config: {
     dialect:  'postgres',
     host: 'localhost',
     username:  'postgres',
@@ -9,8 +9,8 @@ module.exports = {
       timestamp: true,
       underscored: true,
       underscoredAll: true,
-      freezeTableName: false
+      freezeTableName: true
     }
-  // }	
+  }	
 }
 
