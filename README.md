@@ -32,7 +32,7 @@ autor_id: INTEGER - chave estrangeira de autor
 categoria_id: INTEGER - chave estrangeira de categoria
 ```
 
-- Campos de controle
+- Campos de controle - 
 Além dos campos acima relacionados todas tabelas contém os seguintes campos de controle
 ```sh
 created_at: DATE - Data e hora em que o registro foi criado
@@ -101,4 +101,4 @@ onde:
 * rows = Lista de objetos da página selecionada ( contém no máximo uma quantidade de objetos igual ao tamanho da página)
 * perpage = Tamanho dá página em uso
 
-A razão desta estrutura e fornecer suporte a paginação no frontend.
+A razão desta estrutura é fornecer suporte a paginação no frontend.
