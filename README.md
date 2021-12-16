@@ -12,7 +12,7 @@ Este software implementa uma API para uso na criação de um BLOG.
 ## Banco de Dados
 
 O BD do ABlog contém somente 3 tabelas
-- Autor - Contendo os autores dos tiems de blog
+- Autor - Contendo os autores dos items de blog
 ```sh
 id: INTEGER - identificador único
 name: STRING - Nome do autor
@@ -32,9 +32,18 @@ autor_id: INTEGER - chave estrangeira de autor
 categoria_id: INTEGER - chave estrangeira de categoria
 ```
 
+- Campos de controle
+Além dos campos acima relacionados todas tabelas contém os seguintes campos de controle
+```sh
+created_at: DATE - Data e hora em que o registro foi criado
+updated_at: DATE - Data e hora da ultima atualização do registro
+```
+Estes campos são atualizados automaticamente pelo SGBD, não existindo nenhuma implementação no ABlog para atualiza-los, 
+
+
 ##  Estrutura de Diretórios
 ```sh
-* src - Diretório dos códigos fonte - contém os módulos de inicalização
+* src - Diretório dos códigos fonte - contém os módulos de inicialização
     * app 
         * controllers 
         * models
@@ -53,36 +62,37 @@ GET | /listautor | lista autores de uma forma resumida (id, name) (2)|
 GET | /autor/:id | obtém os dados do autor da id informada |
 POST | /autor | inclusão de autor |
 PUT | /autor/:id | alteração do autor da id informada |
-DELETE | /autor/:id | exclusao do autor da id informada |
+DELETE | /autor/:id | exclusão do autor da id informada |
 
 
 #### Categorias
 | Ação | URL | Descrição |
 | ------ | ------ | ---- |
-GET | /categoria | lista categorias de forma paginada,  permitindo infroma a ordem e a página desejada (1) |
+GET | /categoria | lista categorias de forma paginada,  permitindo informa a ordem e a página desejada (1) |
 GET | /listcategoria |  lista categorias de uma forma resumida (id, name) (2)|
 GET | /categoria/:id | obtém os dados da categoria da id informada |
 POST | /categoria |inclusão de categoria |
 PUT | /categoria/:id | alteração da categoria da id informada |
-DELETE | /categoria/:id | exclusao da categoria da id informada |
+DELETE | /categoria/:id | exclusão da categoria da id informada |
 
 #### Items
 | Ação | URL | Descrição |
 | ------ | ------ | ---- |
-GET |/item | lista items de blog de forma paginada,  permitindo infroma a ordem e a página desejada (3) |
+GET |/item | lista items de blog de forma paginada,  permitindo informa a ordem e a página desejada (3) |
 GET |/item/:id |obtém os detalhes do item de blog da id informada |
 POST |/item | inclusão de item de blog |
 PUT | /item/:id | alteração de item de blog da id informada |
-DELETE | /item/:id | exclusao de item de blog da id informada |
+DELETE | /item/:id | exclusão de item de blog da id informada |
 
 ##### Observações
-- (1) - A paginação é obtida através do parametro de querystring "page" e a ordenação pelo parametro também de querystring "sort"
-- (2) - função implementada com o objetivo de prover dados para o preenchimento de caixas de selação (dropdownbox) ou kista de seleção de acordo com necessário pelo frontend
-- (3) - Aqui além da paginação e ordena'ão já descritos em (*) existe a possibilidade de filtrar por categoria, desde que o campo categoria (ex: {"categoria": 4 }) seja informado no corpo da requisição. Obs: Esta seleção por categoria esta apresentando problemas e será resolvido na próxima versão.
+- (1) - A paginação é obtida através do parâmetro de querystring "page" e a ordenação pelo para
+âmetro também de querystring "sort"
+- (2) - função implementada com o objetivo de prover dados para o preenchimento de caixas de seleção (dropdownbox) ou lista de seleção de acordo com necessário pelo frontend
+- (3) - Aqui além da paginação e ordenação já descritos em (*) existe a possibilidade de filtrar por categoria, desde que o campo categoria (ex: {"categoria": 4 }) seja informado no corpo da requisição. Obs: Esta seleção por categoria esta apresentando problemas e será resolvido na próxima versão.
 
 #### Formato das repostas
 
-Todos as funcionalidades da API  retorna JSON, sendo interessante ver que as funções que implementam paginação tem o seguinte formato:
+Todos as funcionalidades da API  retornam JSON, sendo interessante ver que as funções que implementam paginação tem o seguinte formato:
 
 {"count": X, "rows": [], "perpage": Y}
 
@@ -90,3 +100,5 @@ onde:
 * count = Quantidade total de objetos selecionado 
 * rows = Lista de objetos da página selecionada ( contém no máximo uma quantidade de objetos igual ao tamanho da página)
 * perpage = Tamanho dá página em uso
+
+A razão desta estrutura e fornecer suporte a paginação no frontend.
