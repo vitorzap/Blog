@@ -14,9 +14,9 @@ class Autor extends Model {
     return this;
   }
 
-  // static associate(models) {
-  //   this.hasMany(models.Item, { as: 'items' });
-  // }
+  static associate(models) {
+    this.hasMany(models.Item, { as: 'autorItems' });
+  }
 }
 
 module.exports = Autor;

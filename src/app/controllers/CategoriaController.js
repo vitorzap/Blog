@@ -42,14 +42,14 @@ class CategoriaController {
     const schema = Yup.object().shape({
       descricao: Yup.string().required()
     });
-console.log(req.body);
+
     if (!(await schema.isValid(req.body)))
       return res.status(400).json({ error: 'Dados não válidos' });
-console.log('Aqui 1');
+
     const categoriaWithSameDescExists = await Categoria.findOne({
       where: { descricao: req.body.descricao }
     });
-    console.log('Aqui 2');
+
     if (categoriaWithSameDescExists)
       return res
         .status(400)

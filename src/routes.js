@@ -1,6 +1,7 @@
 const { Router } = require('express');
 const AutorController = require('./app/controllers/AutorController');
 const CategoriaController = require('./app/controllers/CategoriaController');
+const ItemController = require('./app/controllers/ItemController');
 
 
 
@@ -30,5 +31,12 @@ routes.get('/categoria/:id', CategoriaController.getOne);
 routes.post('/categoria', CategoriaController.store);
 routes.put('/categoria/:id', CategoriaController.update);
 routes.delete('/categoria/:id', CategoriaController.delete);
+
+//Items
+routes.get('/item', ItemController.index);
+routes.get('/item/:id', ItemController.getOne);
+routes.post('/item', ItemController.store);
+routes.put('/item/:id', ItemController.update);
+routes.delete('/item/:id', ItemController.delete);
 
 module.exports = routes;

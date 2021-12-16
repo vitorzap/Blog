@@ -14,8 +14,9 @@ class Categoria extends Model {
   }
 
   // static associate(models) {
-  //   this.hasMany(models.Item, { as: 'items' });
+  //   this.hasMany(models.Item, { as: 'categoriaItems' });
   // }
+
 }
 
 module.exports = Categoria;
