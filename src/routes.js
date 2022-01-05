@@ -1,7 +1,9 @@
 const { Router } = require('express');
+const SessionController = require('./app/controllers/SessionController');
 const AutorController = require('./app/controllers/AutorController');
 const CategoriaController = require('./app/controllers/CategoriaController');
 const ItemController = require('./app/controllers/ItemController');
+const { auth } = require("./app/middleware/auth");
 
 
 
@@ -15,6 +17,15 @@ routes.get('/ping', function(req, res) {
     }
   })
 });
+// Login
+routes.get('/login', SessionController.login);
+
+// Verifica autenticacáo
+routes.use(auth);
+
+// Logout
+routes.get('/logout', SessionController.logout);
+routes.get('/listblkl', SessionController.listblkl);
 
 // Autores
 routes.get('/autor', AutorController.index);

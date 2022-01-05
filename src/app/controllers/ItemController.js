@@ -12,7 +12,6 @@ class ItemController {
     const includeCategoria = { 
       model: Categoria, as: 'categoria',attributes: ['descricao'] };
     const { categoria: categoriaFilter } = req.body; 
-    console.log (categoriaFilter);
     const filter = categoriaFilter
         ? {categoria_id : categoriaFilter}
         : '';
