@@ -8,7 +8,7 @@ Este software implementa uma API para uso na criação de um BLOG.
 - Utiliza SGBD Postgres
 - Sequelize
 - Express
-- 
+- Redis
 ## Banco de Dados
 
 O BD do ABlog contém somente 3 tabelas
@@ -17,6 +17,8 @@ O BD do ABlog contém somente 3 tabelas
 id: INTEGER - identificador único
 name: STRING - Nome do autor
 email: STRING - Email do autor
+password_hash: STRING - Password do autor encriptada via BCRYPT
+is_root - BOOLEAN - indica se o autor é administrador ou não
 ```
 - Categoria - As categorias em que se classificam os itens de blog
 ```sh
@@ -47,13 +49,20 @@ Estes campos são atualizados automaticamente pelo SGBD, não existindo nenhuma 
     * app 
         * controllers 
         * models
+        * middleware
     * config - Módulos de configuração (ex: configuração do SGBD)
     * database - contém o diretório de migrações e o módulo de inicialização do BD
     *    migrations - migrações
 ```
-Em src temos o modulo app.js que é o módulo inicial da aplicação
+Em src temos os modulo ***app.js*** que é o módulo inicial da aplicação e o módulo ***routes.js*** onde estão concetrada as rotas do aplicativo.
 
 ## A API
+#### Sessão
+| Ação | URL | Descrição |
+| ------ | ------ | ---- |
+GET | /login | inicia a sessão |
+GET | /logout | encerra a sessão |
+
 #### Autores
 | Ação | URL | Descrição |
 | ------ | ------ | ---- |
@@ -102,3 +111,10 @@ onde:
 * perpage = Tamanho dá página em uso
 
 A razão desta estrutura é fornecer suporte a paginação no frontend.
+
+## Autenticação
+
+É utilizado o "***JSON Web Token***" para o controle do acesso ao sistema, assim a cada ***login*** bem sucedido o sistema fornece um token que deve ser incluído nas requisições seguintes para que estas sejam autorizadas. O token deve ir no  "Authorization header" usando esquema "Bearer".
+Para o **logout*** utiliza-se uma "***black list***" implementada no REDIS, assim a requisição de logout implica na adição do token em uso nesta lista. O token que estiver nesta lista está invalidado, já que o processo de autenticação além de validar o token, confere se este está contido nesta lista, caso esteja o acesso é negado. 
+
+

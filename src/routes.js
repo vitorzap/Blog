@@ -18,14 +18,13 @@ routes.get('/ping', function(req, res) {
   })
 });
 // Login
-routes.get('/login', SessionController.login);
+routes.post('/login', SessionController.login);
 
 // Verifica autenticacáo
 routes.use(auth);
 
 // Logout
 routes.get('/logout', SessionController.logout);
-routes.get('/listblkl', SessionController.listblkl);
 
 // Autores
 routes.get('/autor', AutorController.index);

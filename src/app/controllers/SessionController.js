@@ -76,31 +76,10 @@ class SessionController {
       NX: true
     });
     const value = await redisClient.get(`tokenBlkL:${req.loggedId}:${dtTime}`);
-    console.log(value);
     
     return res.json({ token: token });
 
   };
-
-  async listblkl(req,res) {
-    const headerAuthorization = req.headers.authorization;
-
-    if (!headerAuthorization) {
-      return res.status(401).json({ error: 'Token não informado' });
-    }
-  
-    const [, token] = headerAuthorization.split(' ');
-    
-    const blackListKeys = await redisClient.keys(`tokenBlkL:${req.loggedId}:*`);
-    console.log(`blackListKeys=${blackListKeys}`);
-
-    var  blackList = []; 
-    for (const key of blackListKeys) {
-      var blkListToken = await redisClient.get(key);
-      blackList.push(blkListToken);
-    };
-    return res.json({ blackList: blackList });
-  }
 
 }
 
