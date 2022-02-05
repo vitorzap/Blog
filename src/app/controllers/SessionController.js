@@ -1,8 +1,9 @@
 require('dotenv').config();
 const Yup = require('yup');
 const jwt = require('jsonwebtoken');
-const Autor = require('../models/Autor');
-const GetRedisClient = require('../../database/redisClient');
+const Autor = require('../models/postgres/Autor');
+const GetRedisClient = require('../../cache/redisClient');
+
 var redisClient = GetRedisClient();
 
 class SessionController {

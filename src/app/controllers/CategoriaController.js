@@ -1,31 +1,28 @@
 const Yup = require('yup');
-const Categoria = require('../models/Categoria');
+const CategoriaRepository = require('../../database/postgres/repositories/categoriaRepository');
+const ItemRepository = require('../../database/postgres/repositories/itemRepository');
+
 const Constants = require('../constants');
 
 class CategoriaController {
   async index(req, res) {
-    let categorias;
-    const { page = 1 } = req.query;
-    categorias = await Categoria.findAndCountAll({
-      order: ['descricao'],
-      limit: Constants.ROWS_PER_PAGE,
-      offset: (page - 1) * Constants.ROWS_PER_PAGE
-    });
-    categorias.perpage = Constants.ROWS_PER_PAGE;
-    return res.json(categorias);
+    const { page = 1} = req.query;
+    return res.json( await CategoriaRepository.paginatedList({
+      page: page,
+      attributes: ['id', 'descricao'],
+      order: ['descricao']
+    }));
   }
 
   async listcategorias(req, res) {
-    let categorias;
-    categorias = await Categoria.findAll({
+    return res.json( await CategoriaRepository.list({
       attributes: ['id', 'descricao'],
       order: ['descricao']
-    });
-    return res.json(categorias);
+    }));
   }
 
   async getOne(req, res) {
-    const categoria = await Categoria.findByPk(req.params.id);
+    const categoria = await CategoriaRepository.findById(req.params.id);
     if (!categoria) {
       return res.status(400).json({ error: 'Categoria não cadastrada.' });
     }
@@ -46,16 +43,15 @@ class CategoriaController {
     if (!(await schema.isValid(req.body)))
       return res.status(400).json({ error: 'Dados não válidos' });
 
-    const categoriaWithSameDescExists = await Categoria.findOne({
-      where: { descricao: req.body.descricao }
-    });
+    const categoriaWithSameDescExists = 
+        await CategoriaRepository.findOne({ descricao: req.body.descricao });
 
     if (categoriaWithSameDescExists)
       return res
         .status(400)
         .json({ error: 'Já existe uma categoria com esta descrição.' });
 
-    const { id, descricao } = await Categoria.create(req.body);
+    const { id, descricao } = await CategoriaRepository.create(req.body);
 
     return res.json({
       id,
@@ -73,23 +69,22 @@ class CategoriaController {
 
     const { descricao: newDescricao } = req.body;
 
-    const categoria = await Categoria.findByPk(req.params.id);
+    const categoria = await CategoriaRepository.findById(req.params.id);
     if (!categoria) {
       return res.status(400).json({ error: 'Categoria não cadastrada.' });
     }
-
+    
     if (newDescricao && newDescricao !== categoria.descricao) {
-      const categoriaWithSameDescExists = await Categoria.findOne({
-        where: { descricao: newDescricao }
-      });
-
+      const categoriaWithSameDescExists = 
+        await CategoriaRepository.findOne({ descricao: newDescricao });
       if (categoriaWithSameDescExists)
-        return res
+      return res
           .status(400)
           .json({ error: 'Já existe uma Categoria com esta descrição.' });
     }
  
-    const { id, descricao} = await categoria.update(req.body);
+    const { id, descricao} = 
+      await CategoriaRepository.update(req.params.id, req.body);
 
     return res.json({
       id,
@@ -98,22 +93,20 @@ class CategoriaController {
   }
 
   async delete(req, res) {
-    const categoria = await Categoria.findByPk(req.params.id);
+    const categoria = await CategoriaRepository.findById(req.params.id);
     if (!categoria) {
       return res.status(400).json({ error: 'Categoria não existe.' });
     }
 
-    // const item = await Item.findOne({
-    //   where: { Categoria_id: req.params.id }
-    // });
-    // if (item) {
-    //   return res.status(400).json({
-    //     error: 'Existe pelo menos um item de blog ligado a esta categoria.'
-    //   });
-    // }
+    const item = await ItemRepository.findOne({ categoria_id: req.params.id });
+    if (item) {
+      return res.status(400).json({
+        error: 'Existe pelo menos um item de blog ligado a esta categoria.'
+      });
+    }
 
     const { id, descricao } = categoria;
-    await categoria.destroy();
+    await CategoriaRepository.delete(req.params.id);
 
     return res.json({
       id,

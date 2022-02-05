@@ -3,7 +3,7 @@ require('dotenv').config();
 console.log('BLOG STARTED');
 
 const express = require('express');
-require('./database');
+require('./database/postgres');
 
 const app = express();
 const server = require('http').createServer(app);
@@ -14,3 +14,5 @@ app.use(routes);
 
 const port = process.env.PORT || 3333;
 server.listen(port, () => console.log(`Server port = (${port})`));
+
+module.exports = app;

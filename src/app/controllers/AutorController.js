@@ -1,33 +1,49 @@
+const bcrypt = require('bcryptjs');
 const Yup = require('yup');
-const Autor = require('../models/Autor');
-const Item= require('../models/Item');
 const Constants = require('../constants');
+const AutorRepository = require('../../database/postgres/repositories/autorRepository');
+const ItemRepository = require('../../database/postgres/repositories/itemRepository');
+
 
 class AutorController {
+
   async index(req, res) {
-    let autores;
+    // let autores;
+    // autores = AutorRepository.findAllCount();
+    // autores = await Autor.findAndCountAll({
+      //   attributes: ['id', 'name','email', 'is_root'],
+      //   order: [sort || 'name'],
+      //   limit: Constants.ROWS_PER_PAGE,
+      //   offset: (page - 1) * Constants.ROWS_PER_PAGE
+      // });
+      // autores.perpage = Constants.ROWS_PER_PAGE;
+      // return res.json(autores);
     const { page = 1, sort = 'name' } = req.query;
-    autores = await Autor.findAndCountAll({
+    return res.json( await AutorRepository.paginatedList({
       attributes: ['id', 'name','email', 'is_root'],
-      order: [sort || 'name'],
-      limit: Constants.ROWS_PER_PAGE,
-      offset: (page - 1) * Constants.ROWS_PER_PAGE
-    });
-    autores.perpage = Constants.ROWS_PER_PAGE;
-    return res.json(autores);
+      order: [sort],
+      page: page
+    }
+    ));
   }
 
   async listautores(req, res) {
-    let autores;
-    autores = await Autor.findAll({
-      attributes: ['id', 'name', 'is_root'],
-      order: ['name']
-    });
-    return res.json(autores);
+    // let autores;
+    // autores = await Autor.findAll({
+    //   attributes: ['id', 'name', 'is_root'],
+    //   order: ['name']
+    // });
+    return res.json(
+      await AutorRepository.list({
+        attributes: ['id', 'name', 'is_root'],
+        order: ['name']
+      })
+    );
   }
 
   async getOne(req, res) {
-    const autor = await Autor.findByPk(req.params.id);
+    // const autor = await Autor.findByPk(req.params.id);
+    const autor = await AutorRepository.findById(req.params.id);
     if (!autor) {
       return res.status(400).json({ error: 'Autor não cadastrado.' });
     }
@@ -60,28 +76,39 @@ class AutorController {
     if (!(await schema.isValid(req.body)))
       return res.status(400).json({ error: 'Dados não válidos' });
 
-    const autorWithSameEmailExists = await Autor.findOne({
-      where: { email: req.body.email }
-    });
+    // const autorWithSameEmailExists = await Autor.findOne({
+    //   where: { email: req.body.email }
+    // });
+    const autorWithSameEmailExists = 
+          await AutorRepository.findOne({ email: req.body.email });
 
     if (autorWithSameEmailExists)
       return res
         .status(400)
         .json({ error: 'Já existe uma autor com este email.' });
 
+    // const { 
+    //   id, 
+    //   name, 
+    //   email, 
+    //   password, 
+    //   is_root: isRoot 
+    // } = await Autor.create(req.body);
+    const { password } = req.body; 
+    const password_hash = await bcrypt.hash(password, 8);
     const { 
       id, 
       name, 
       email, 
-      password, 
-      is_root: isRoot 
-    } = await Autor.create(req.body);
+      is_root: isRoot
+    } = await AutorRepository.create({...req.body, password_hash});
+
 
     return res.json({
       id,
       name,
       email,
-      password,
+      passwordHash,
       isRoot
     });
   }
@@ -105,17 +132,17 @@ class AutorController {
     if (!(await schema.isValid(req.body)))
       return res.status(400).json({ error: 'Dados não válidos' });
 
-    const { email: newEmail, oldPassword } = req.body;
+    const { email: newEmail, password, oldpassword: oldPassword } = req.body;
 
-    const autor = await Autor.findByPk(req.params.id);
+    const autor = await AutorRepository.findById(req.params.id);
     if (!autor) {
-      return res.status(400).json({ error: 'Autor não cadastrada.' });
+      return res.status(400).json({ error: 'Autor não cadastrado.' });
     }
 
     if (newEmail && newEmail !== autor.email) {
-      const autorWithSameEmailExists = await Autor.findOne({
-        where: { email: newEmail }
-      });
+      const autorWithSameEmailExists = await AutorRepository.findOne(
+        { email: newEmail }
+      );
 
       if (autorWithSameEmailExists)
         return res
@@ -123,10 +150,29 @@ class AutorController {
           .json({ error: 'Já existe uma Autor com este email.' });
     }
 
-    if (oldPassword && !(await autor.checkPassword(oldPassword)))
+    if (oldPassword && !(await bcrypt.compare(oldPassword, autor.password_hash)))
       return res.status(401).json({ error: 'Senha não confere.' });
  
-    const { id, name, email, is_root: isRoot } = await autor.update(req.body);
+    // if (oldPassword && !(await autor.checkPassword(oldPassword)))
+    //   return res.status(401).json({ error: 'Senha não confere.' });
+ 
+    // const { id, name, email, is_root: isRoot, password_hash } = 
+    //     await AutorRepository.update(req.params.id,req.body);
+    var password_hash = '';
+    if (password && oldPassword) {
+      password_hash = await bcrypt.hash(password, 8);
+    }
+    const { 
+      id, 
+      name, 
+      email, 
+      is_root: isRoot
+    } = (password && oldPassword) 
+        ? await AutorRepository.update(
+            req.params.id,
+            {...req.body, password_hash}
+        )
+        : await AutorRepository.update(req.params.id,req.body);
 
     return res.json({
       id,
@@ -137,14 +183,14 @@ class AutorController {
   }
 
   async delete(req, res) {
-    const autor = await Autor.findByPk(req.params.id);
+    // const autor = await Autor.findByPk(req.params.id);
+    const autor = await AutorRepository.findById(req.params.id);
     if (!autor) {
       return res.status(400).json({ error: 'Autor não existe.' });
     }
 
-    const item = await Item.findOne({
-      where: { autor_id: req.params.id }
-    });
+    // const item = await Item.findOne({
+    const item = await ItemRepository.findOne({ autor_id: req.params.id });
     if (item) {
       return res.status(400).json({
         error: 'Existe pelo menos um item de blog ligado a este autor.'
@@ -152,7 +198,8 @@ class AutorController {
     }
 
     const { id, name, email } = autor;
-    await autor.destroy();
+    // await autor.destroy();
+    await AutorRepository.delete(req.params.id);
 
     return res.json({
       id,

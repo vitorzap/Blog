@@ -1,7 +1,7 @@
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const { promisify } = require('util');
-const GetRedisClient = require('../../database/redisClient');
+const GetRedisClient = require('../../cache/redisClient');
 var redisClient = GetRedisClient();
 
 async function auth(req, res, next) {

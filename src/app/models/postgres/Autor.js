@@ -8,18 +8,18 @@ class Autor extends Model {
       {
         name: Sequelize.STRING,
         email: Sequelize.STRING,
-        password: Sequelize.VIRTUAL,
+        // password: Sequelize.VIRTUAL,
         password_hash: Sequelize.STRING,
         is_root: Sequelize.BOOLEAN
       },
       { sequelize }
     );
 
-    this.addHook('beforeSave', async autor => {
-      if (autor.password) {
-        autor.password_hash = await bcrypt.hash(autor.password, 8);
-      }
-    });
+    // this.addHook('beforeSave', async autor => {
+    //   if (autor.password) {
+    //     autor.password_hash = await bcrypt.hash(autor.password, 8);
+    //   }
+    // });
 
 
     return this;

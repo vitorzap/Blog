@@ -21,7 +21,7 @@ routes.get('/ping', function(req, res) {
 routes.post('/login', SessionController.login);
 
 // Verifica autenticacáo
-routes.use(auth);
+//routes.use(auth);
 
 // Logout
 routes.get('/logout', SessionController.logout);

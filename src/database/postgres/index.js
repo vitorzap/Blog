@@ -1,10 +1,10 @@
 const Sequelize = require('sequelize');
 
-const Autor = require('../app/models/Autor');
-const Categoria = require('../app/models/Categoria');
-const Item = require('../app/models/Item');
+const Autor = require('../../app/models/postgres/Autor');
+const Categoria = require('../../app/models/postgres/Categoria');
+const Item = require('../../app/models/postgres/Item');
 
-const { config: dbConfig } = require('../config/database');
+const { config: dbConfig } = require('../../config/postgres');
 
 const models = [Autor, Categoria, Item];
 
