@@ -1,23 +1,13 @@
 const bcrypt = require('bcryptjs');
 const Yup = require('yup');
 const Constants = require('../constants');
-const AutorRepository = require('../../database/postgres/repositories/autorRepository');
 const ItemRepository = require('../../database/postgres/repositories/itemRepository');
+const AutorRepository = require('../../database/postgres/repositories/autorRepository');
 
 
 class AutorController {
 
   async index(req, res) {
-    // let autores;
-    // autores = AutorRepository.findAllCount();
-    // autores = await Autor.findAndCountAll({
-      //   attributes: ['id', 'name','email', 'is_root'],
-      //   order: [sort || 'name'],
-      //   limit: Constants.ROWS_PER_PAGE,
-      //   offset: (page - 1) * Constants.ROWS_PER_PAGE
-      // });
-      // autores.perpage = Constants.ROWS_PER_PAGE;
-      // return res.json(autores);
     const { page = 1, sort = 'name' } = req.query;
     return res.json( await AutorRepository.paginatedList({
       attributes: ['id', 'name','email', 'is_root'],
@@ -28,11 +18,6 @@ class AutorController {
   }
 
   async listautores(req, res) {
-    // let autores;
-    // autores = await Autor.findAll({
-    //   attributes: ['id', 'name', 'is_root'],
-    //   order: ['name']
-    // });
     return res.json(
       await AutorRepository.list({
         attributes: ['id', 'name', 'is_root'],
@@ -87,15 +72,10 @@ class AutorController {
         .status(400)
         .json({ error: 'Já existe uma autor com este email.' });
 
-    // const { 
-    //   id, 
-    //   name, 
-    //   email, 
-    //   password, 
-    //   is_root: isRoot 
-    // } = await Autor.create(req.body);
     const { password } = req.body; 
+    console.log('password',password);
     const password_hash = await bcrypt.hash(password, 8);
+    console.log('password_hash',password_hash);
     const { 
       id, 
       name, 
@@ -108,7 +88,6 @@ class AutorController {
       id,
       name,
       email,
-      passwordHash,
       isRoot
     });
   }

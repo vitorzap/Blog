@@ -51,53 +51,69 @@ class ItemRepository extends GenericRepository{
   }
 
   async findById(id) {
-    const { 
-      titulo, 
-      descricao, 
-      autor_id, 
-      categoria_id, 
-      autor: { name: autor },
-      categoria: { descricao: categoria} 
-    } = await this._entity.findByPk(id,{ include: [
-        { model: Autor, as: 'autor',attributes: ['name'] }, 
-        { model: Categoria, as: 'categoria',attributes: ['descricao'] }
+    const item = await this._entity.findByPk(id,{ include: [
+      { model: Autor, as: 'autor',attributes: ['name'] }, 
+      { model: Categoria, as: 'categoria',attributes: ['descricao'] }
       ]     
     });
-    return { 
-      id,
-      titulo, 
-      descricao, 
-      autor_id, 
-      autor, 
-      categoria_id, 
-      categoria 
-    };
+    if (item) {
+      const { 
+        titulo, 
+        descricao, 
+        autor_id, 
+        categoria_id, 
+        autor: { name: autor },
+        categoria: { descricao: categoria} 
+      } = item;
+      return { 
+        id,
+        titulo, 
+        descricao, 
+        autor_id, 
+        autor, 
+        categoria_id, 
+        categoria 
+      };
+    } else {
+      return item;
+    }
   }
 
   async findOne(condition) {
-    const { 
-      titulo, 
-      descricao, 
-      autor_id, 
-      categoria_id, 
-      autor: { name: autor },
-      categoria: { descricao: categoria} 
-    } = await this._entity.findOne({ 
+    const item = await this._entity.findOne({ 
       where: condition,
       include: [
         { model: Autor, as: 'autor',attributes: ['name'] }, 
         { model: Categoria, as: 'categoria',attributes: ['descricao'] }
       ]     
     });
-    return { 
-      id,
-      titulo, 
-      descricao, 
-      autor_id, 
-      autor, 
-      categoria_id, 
-      categoria 
-    };
+    if (item) {
+      const { 
+        titulo, 
+        descricao, 
+        autor_id, 
+        categoria_id, 
+        autor: { name: autor },
+        categoria: { descricao: categoria} 
+      } = await this._entity.findOne({ 
+        where: condition,
+        include: [
+          { model: Autor, as: 'autor',attributes: ['name'] }, 
+          { model: Categoria, as: 'categoria',attributes: ['descricao'] }
+        ]     
+      });
+      return { 
+        id,
+        titulo, 
+        descricao, 
+        autor_id, 
+        autor, 
+        categoria_id, 
+        categoria 
+      };
+    } else {
+      return item;
+    }
   }
 
 
